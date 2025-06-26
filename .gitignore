@@ -1,0 +1,4 @@
+traefik/certs/*
+!traefik/certs/ca/.gitkeep
+!traefik/certs/.gitkeep
+!traefik/certs/domain.conf
