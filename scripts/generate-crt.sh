@@ -59,7 +59,7 @@ if [ -f "$CA_CSR" ]; then
 else
     echo "🔐 Génération du Certificate Signing Request (CSR)..."
 
-    openssl req -new -key "$CRT_KEY" -out "$CA_CSR" -subj "/C=FR/ST=Rhone/L=Lyon/O=LOCALHOST-DEV/CN=*.localhost"
+    openssl req -new -key "$CRT_KEY" -out "$CA_CSR" -config "$DOMAIN_CONF"
 
     echo "🔍 Informations sur le CSR généré :"
     openssl req -text -noout -verify -in "$CA_CSR"

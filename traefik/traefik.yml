@@ -101,7 +101,7 @@ api:
   # Optional
   # Default: false
   #
-  insecure: true
+  insecure: false
 
   # Enabled Dashboard
   #
