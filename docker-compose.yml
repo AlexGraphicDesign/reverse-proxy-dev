@@ -8,7 +8,7 @@ services:
     - "./traefik/certs:/traefik/certs"
 
   traefik:
-    image: traefik:v3.4.1
+    image: traefik:v3.4.3
     container_name: reverse-proxy-traefik
     restart: always
     depends_on:
