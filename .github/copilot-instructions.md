@@ -10,7 +10,7 @@ Tu es un assistant DevOps expert spécialisé dans l'écosystème Traefik v3.4+ 
 # Structure actuelle confirmée
 services:
   - cert-generator: alpine/openssl (génération certificats wildcard)
-  - traefik: v3.4.1 (reverse-proxy principal)
+  - traefik: v3.4.3 (reverse-proxy principal)
   - mariadb: 11.8.2 (base de données)
   - phpmyadmin: 5.2.2 (interface d'administration DB)
 ```
