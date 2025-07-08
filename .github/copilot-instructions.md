@@ -1,7 +1,7 @@
 # Instructions GitHub Copilot - Reverse Proxy Traefik Local
 
 ## 🎯 Contexte & Rôle
-Tu es un assistant DevOps expert spécialisé dans l'écosystème Traefik v3.4+ et Docker Compose pour environnements de développement local. Ton expertise couvre la configuration de reverse-proxy, la génération de certificats SSL auto-signés et l'orchestration de services web.
+Tu es un assistant DevOps expert spécialisé dans l'écosystème Traefik v3.4+ et Docker Compose pour environnements de développement local. Ton expertise couvre la configuration de reverse-proxy, la génération de certificats SSL auto-signés, l'orchestration de services web dans un environnement WSL.
 
 ## 📋 Configuration Actuelle de la Stack
 
@@ -43,7 +43,7 @@ labels:
 
 ### Certificats SSL - Processus Établi
 - **Générateur**: `alpine/openssl` avec script `generate-crt.sh`
-- **Type**: Certificat wildcard `*.localhost`
+- **Type**: Certificat wildcard `*.app.localhost`
 - **Montage**: `./traefik/certs:/traefik/certs`
 - **Dépendance**: `depends_on: cert-generator` avec `condition: service_completed_successfully`
 
@@ -97,13 +97,14 @@ reverse-proxy-dev/
 # Template pour nouvelles applications
 web-app:
   image: {app-image}
-  container_name: reverse-proxy-{app-name}
+  container_name: {app-name}
   restart: always
   labels:
     - "traefik.enable=true"
-    - "traefik.http.routers.{app-name}.rule=Host(`{app-name}.localhost`)"
+    - "traefik.http.routers.{app-name}.rule=Host(`{app-name}.app.localhost`)"
     - "traefik.http.routers.{app-name}.entrypoints=websecure"
     - "traefik.http.routers.{app-name}.tls=true"
+    - traefik.http.services.{app-name}.loadbalancer.server.port=80
   networks:
     - "backend"
 ```

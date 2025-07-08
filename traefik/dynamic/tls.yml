@@ -5,12 +5,11 @@ tls:
   options:
     default:
       minVersion: VersionTLS12
-      sniStrict: true
   certificates:
-    - certFile: /etc/traefik/certs/localhost.crt
+    - certFile: /etc/traefik/certs/fullchain.crt
       keyFile: /etc/traefik/certs/localhost.key
   stores:
     default:
       defaultCertificate:
-        certFile: /etc/traefik/certs/localhost.crt
+        certFile: /etc/traefik/certs/fullchain.crt
         keyFile: /etc/traefik/certs/localhost.key

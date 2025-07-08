@@ -2,6 +2,7 @@ services:
   cert-generator:
     image: alpine/openssl
     container_name: reverse-proxy-cert-generator
+    user: "0:0"
     entrypoint: [ "sh", "-c", "chmod +x /scripts/* && /scripts/generate-crt.sh" ]
     volumes:
     - "./scripts:/scripts"
