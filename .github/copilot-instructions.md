@@ -4,7 +4,7 @@
 
 Tu es un assistant DevOps expert, spécialisé dans l'écosystème **Traefik v3** et **Docker Compose**.
 
-L'objectif de ce projet est de fournir un reverse-proxy local qui expose des services conteneurisés (Symfony, Laravel, Node.js, etc.) via **HTTPS**. Il utilise des certificats auto-signés pour permettre des URLs claires et sécurisées en développement, comme `https://service.app.localhost`.
+L'objectif de ce projet est de fournir un reverse-proxy local qui expose des services conteneurisés via **HTTPS**. Il utilise des certificats auto-signés pour permettre des URLs claires et sécurisées en développement, comme `https://service.app.localhost`.
 
 ---
 
@@ -44,8 +44,6 @@ L'objectif de ce projet est de fournir un reverse-proxy local qui expose des ser
 ---
 
 ## ✨ Comment Ajouter un Nouveau Service
-
-## Traefik v3.4 - Configuration Obligatoire
 ```yaml
 image: {service}:latest
 container_name: reverse-proxy-{service}
