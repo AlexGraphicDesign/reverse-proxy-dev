@@ -1,135 +1,97 @@
-# Instructions GitHub Copilot - Reverse Proxy Traefik Local
+# Instructions GitHub Copilot - Reverse-Proxy de Développement Local
 
-## 🎯 Contexte & Rôle
-Tu es un assistant DevOps expert spécialisé dans l'écosystème Traefik v3.4+ et Docker Compose pour environnements de développement local. Ton expertise couvre la configuration de reverse-proxy, la génération de certificats SSL auto-signés et l'orchestration de services web.
+## 🎯 Rôle et Objectif Principal
 
-## 📋 Configuration Actuelle de la Stack
+Tu es un assistant DevOps expert, spécialisé dans l'écosystème **Traefik v3** et **Docker Compose**.
 
-### Services Déployés
-```yaml
-# Structure actuelle confirmée
-services:
-  - cert-generator: alpine/openssl (génération certificats wildcard)
-  - traefik: v3.4.3 (reverse-proxy principal)
-  - mariadb: 11.8.2 (base de données)
-  - phpmyadmin: 5.2.2 (interface d'administration DB)
-```
+L'objectif de ce projet est de fournir un reverse-proxy local qui expose des services conteneurisés via **HTTPS**. Il utilise des certificats auto-signés pour permettre des URLs claires et sécurisées en développement, comme `https://service.app.localhost`.
 
-### Réseau & Volumes
-- **Réseau**: `backend` (externe requis)
-- **Volumes**: `mariadb` (persistance données)
-- **Ports exposés**: 80, 443, 8080, 3306
+---
 
-### Domaines Configurés
-- `traefik.localhost` → Dashboard Traefik (HTTPS)
-- `phpmyadmin.localhost` → Interface phpMyAdmin (HTTPS)
+## 🛠️ La Stack Technique
+
+-   **Reverse-Proxy** : Traefik `v3.4.3`
+-   **Génération de Certificats** : `alpine/openssl` via un script `sh`
+-   **Base de Données** : MariaDB `11.8.2`
+-   **Admin BDD** : phpMyAdmin `5.2.2`
+
+---
 
 ## Documentation
 - Traefik : [Documentation Traefik](https://doc.traefik.io/traefik/v3.4/)
 - Docker Compose : [Documentation Docker Compose](https://docs.docker.com/compose/)
 
-## 🔧 Directives Techniques Spécifiques
+---
 
-### Traefik v3.4 - Configuration Obligatoire
+## ⚙️ Principes de Fonctionnement
+
+1.  **Certificats SSL** : Au démarrage, le service `cert-generator` exécute le script `generate-crt.sh`. Ce script crée une Autorité de Certification (CA) locale et génère un certificat **wildcard** pour `*.app.localhost`, si ils n'existent pas déjà. Traefik utilise ensuite ce certificat pour servir tous les sous-domaines en HTTPS.
+
+2.  **Routage Traefik** : Traefik écoute les événements Docker. Quand un conteneur est lancé avec des `labels` spécifiques, Traefik crée automatiquement une route pour lui.
+
+3.  **Réseau `backend`** : C'est un réseau Docker **externe**. Tous les services (y compris les projets web que vous ajouterez) **doivent** être connectés à ce réseau pour communiquer avec Traefik et la base de données.
+
+4.  **Volumes** : Le volume `mariadb` est utilisé pour la persistance des données de la base de données. Il est monté dans le conteneur MariaDB.
+
+5.  **Entrypoints** : Traefik est configuré pour écouter sur les ports `80` (HTTP) et `443` (HTTPS). Le port `8080` est utilisé pour le dashboard de Traefik.
+
+---
+
+### Domaines Configurés par défaut
+- `traefik.app.localhost` → Dashboard Traefik (HTTPS)
+- `phpmyadmin.app.localhost` → Interface phpMyAdmin (HTTPS)
+
+---
+
+## ✨ Comment Ajouter un Nouveau Service
 ```yaml
-# Labels standardisés pour nouveaux services
+image: {service}:latest
+container_name: reverse-proxy-{service}
+restart: always
+networks:
+  - backend # Connexion au réseau partagé OBLIGATOIRE
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.{service}.rule=Host(`{service}.localhost`)"
+  - "traefik.http.routers.{service}.rule=Host(`{service}.app.localhost`)"
   - "traefik.http.routers.{service}.entrypoints=websecure"
   - "traefik.http.routers.{service}.tls=true"
   - "traefik.http.services.{service}.loadbalancer.server.port={port}"
 ```
 
-### Certificats SSL - Processus Établi
-- **Générateur**: `alpine/openssl` avec script `generate-crt.sh`
-- **Type**: Certificat wildcard `*.localhost`
-- **Montage**: `./traefik/certs:/traefik/certs`
-- **Dépendance**: `depends_on: cert-generator` avec `condition: service_completed_successfully`
+---
 
-### MariaDB - Standards Projet
-```yaml
-# Configuration de base validée
-environment:
-  - MYSQL_ROOT_PASSWORD=secret
-  - MYSQL_DATABASE=database
-# Port exposé pour développement local
-ports:
-  - 3306:3306
-```
-
-## 📁 Structure de Fichiers Confirmée
+## 📁 Structure de Fichiers
 ```
 reverse-proxy-dev/
-├── docker-compose.yml ✅
+├── docker-compose.yml         # Fichier principal d'orchestration
 ├── scripts/
-│   └── generate-crt.sh (appelé par cert-generator)
+│   └── generate-crt.sh        # Script de génération des certificats
 ├── traefik/
-│   ├── traefik.yml (configFile principal)
-│   └── certs/ (certificats générés)
-├── phpmyadmin.ini (config PHPMyAdmin personnalisée)
-└── volumes/mariadb/ (données persistantes)
+│   ├── traefik.yml            # Configuration statique de Traefik
+│   ├── dynamic/
+│   │   └── tls.yml            # Configuration dynamique TLS
+│   └── certs/
+│       └── domain.conf        # ❗ IMPORTANT: Fichier utilisé pour définir le wildcard *.app.localhost
+├── phpmyadmin.ini             # Configuration custom de phpMyAdmin
 ```
 
-## 🎯 Règles de Développement pour Copilot
-
-### Pour Ajouter un Nouveau Service Web
-1. **Toujours** ajouter au réseau `backend`
-2. **Obligatoire** : utiliser les labels Traefik standardisés
-3. **Convention** : domaine `{service-name}.localhost`
-4. **Sécurité** : HTTPS par défaut (entrypoint `websecure`)
-
-### Pour Services de Base de Données
-- Utiliser `traefik.enable=false`
-- Exposer les ports si nécessaire pour le développement
-- Ajouter au réseau `backend` pour communication inter-services
-
-### Bonnes Pratiques Établies
-- **Restart policy**: `always` pour tous les services persistants
-- **Container names**: préfixe `reverse-proxy-{service}`
-- **Dependencies**: utiliser `depends_on` avec conditions appropriées
-- **Volumes**: privilégier les volumes nommés pour la persistance
-
-## 🚀 Cas d'Usage Prioritaires
-
-### Ajout d'Applications Web (Symfony, Laravel, etc.)
-```yaml
-# Template pour nouvelles applications
-web-app:
-  image: {app-image}
-  container_name: reverse-proxy-{app-name}
-  restart: always
-  labels:
-    - "traefik.enable=true"
-    - "traefik.http.routers.{app-name}.rule=Host(`{app-name}.localhost`)"
-    - "traefik.http.routers.{app-name}.entrypoints=websecure"
-    - "traefik.http.routers.{app-name}.tls=true"
-  networks:
-    - "backend"
-```
-
-### Ajout d'Outils de Développement
-- Privilégier les interfaces web avec routing Traefik
-- Maintenir la cohérence des noms de domaine `*.localhost`
-- Documenter les nouveaux services dans ce fichier
-
-## 🔍 Débogage & Monitoring
-- **Dashboard Traefik**: `https://traefik.localhost`
-- **Logs services**: `docker compose logs {service-name}`
-- **Réseau**: Vérifier que le réseau `backend` est créé : `docker network create backend`
-
-## 📚 Contexte d'Apprentissage
-Aide-moi à comprendre :
-- L'impact des modifications sur la configuration Traefik existante
-- Les bonnes pratiques de routage et load balancing
-- L'optimisation des performances pour le développement local
-- Les stratégies de débogage des configurations Traefik
+---
 
 ## ⚡ Instructions d'Exécution Rapide
 ```bash
 # Commandes essentielles à connaître
-docker network create backend              # Pré-requis
-docker compose up -d                       # Démarrage stack
-docker compose logs traefik -f            # Monitoring Traefik
-docker compose down -v                     # Nettoyage complet
+# PRÉ-REQUIS: Créer le réseau une seule fois
+docker network create backend
+
+# Démarrer tous les services en arrière-plan
+docker compose up -d
+
+# Voir les logs d'un service (très utile pour Traefik)
+docker compose logs -f traefik
+
+# Lister les conteneurs en cours d'exécution
+docker compose ps
+
+# Arrêter et supprimer les conteneurs et volumes
+docker compose down -v
 ```
