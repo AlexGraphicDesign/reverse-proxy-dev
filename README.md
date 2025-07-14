@@ -40,9 +40,9 @@ Pour lancer/redémarrer le projet, un simple :
 ```
 suffit, il est cependant configuré ici pour redémarrer à chaque fois au démarrage de Docker.
 
-## Connecter un projet
+## Connecter un nouveau service
 
-- Pour connecter un nouveau projet à ce reverse proxy, il suffit simplement de déclarer (exemple ici avec un conteneur PHP) la configuration comme suit dans votre docker-compose
+- Pour connecter un nouveau service à ce reverse proxy, il suffit simplement de déclarer (exemple ici avec un conteneur PHP) la configuration comme suit dans le docker-compose du projet en question
 
 ```yaml
 php:
