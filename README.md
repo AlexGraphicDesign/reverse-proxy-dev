@@ -39,3 +39,27 @@ Pour lancer/redemarrer le projet, un simple :
     make up
 ```
 suffit, il est cependant configuré ici pour redémarrer à chaque fois au démarrage de Docker.
+
+## Connecter un projet
+
+- Pour connecter un nouveau projet à ce reverse proxy, il suffit simplement de déclarer (exemple ici avec un conteneur PHP) la configuration comme suit dans votre docker-compose
+
+```yaml
+php:
+    extra_hosts:
+      - "{app-name}.app.localhost:host-gateway"
+    networks:
+      - backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.{app-name}.rule=Host(`{app-name}.app.localhost`)
+      - traefik.http.routers.{app-name}.entrypoints=websecure
+      - traefik.http.routers.{app-name}.tls=true
+      - traefik.http.services.{app-name}.loadbalancer.server.port=80
+
+networks:
+  backend:
+    external: true
+```
+
+Apres le build, votre projet local est maintenant accessible en HTTPS.
