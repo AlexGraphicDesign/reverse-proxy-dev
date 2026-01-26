@@ -2,7 +2,7 @@
 
 ## 🎯 Rôle et Objectif Principal
 
-Tu es un assistant DevOps expert, spécialisé dans l'écosystème **Traefik v3** et **Docker Compose**.
+Tu es un assistant DevOps expert, spécialisé dans l'écosystème **Traefik v3.6** et **Docker Compose**.
 
 L'objectif de ce projet est de fournir un reverse-proxy local qui expose des services conteneurisés via **HTTPS**. Il utilise un certificat auto-signé généré automatiquement pour permettre des URLs sécurisées en développement de la forme `https://service.app.localhost`.
 
@@ -10,15 +10,15 @@ L'objectif de ce projet est de fournir un reverse-proxy local qui expose des ser
 
 ## 🛠️ La Stack Technique
 
--   **Reverse-Proxy** : Traefik `v3.4.3`
+-   **Reverse-Proxy** : Traefik `v3.6.7`
 -   **Génération de Certificats** : `alpine/openssl` via un script `sh`
--   **Base de Données** : MariaDB `11.8.2`
--   **Admin BDD** : phpMyAdmin `5.2.2`
+-   **Base de Données** : MariaDB `12`
+-   **Admin BDD** : phpMyAdmin `5.2`
 
 ---
 
 ## Documentation
-- Traefik : [Documentation Traefik](https://doc.traefik.io/traefik/v3.4/)
+- Traefik : [Documentation Traefik](https://doc.traefik.io/traefik/v3.6/)
 - Docker Compose : [Documentation Docker Compose](https://docs.docker.com/compose/)
 
 ---

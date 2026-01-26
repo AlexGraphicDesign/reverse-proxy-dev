@@ -9,7 +9,7 @@ services:
     - "./traefik/certs:/traefik/certs"
 
   traefik:
-    image: traefik:v3.4.3
+    image: traefik:v3.6
     container_name: reverse-proxy-traefik
     restart: always
     depends_on:
@@ -34,7 +34,7 @@ services:
       - "backend"
 
   mariadb:
-    image: mariadb:11.8.2
+    image: mariadb:12
     container_name: reverse-proxy-mariadb
     restart: always
     environment:
@@ -50,7 +50,7 @@ services:
       - "backend"
 
   phpmyadmin:
-    image: phpmyadmin:5.2.2
+    image: phpmyadmin:5.2
     container_name: reverse-proxy-phpmyadmin
     restart: always
     volumes:
