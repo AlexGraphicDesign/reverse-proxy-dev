@@ -9,7 +9,7 @@ services:
     - "./traefik/certs:/traefik/certs"
 
   traefik:
-    image: traefik:v3.6
+    image: traefik:v3.7
     container_name: reverse-proxy-traefik
     restart: always
     depends_on:
@@ -22,8 +22,8 @@ services:
       - "443:443"
       - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./traefik:/etc/traefik"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "./traefik:/etc/traefik:ro"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.app.localhost`)"
